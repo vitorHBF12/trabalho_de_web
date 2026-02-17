@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login teste</title>
+</head>
+<body>
+    <h1>Teste Firebase e Autenticação</h1>
+
+    <div id="status">
+        Status: Carregando...
+    </div>
+    <hr>
+    <div id="area-login">
+        <button id="btnLogin">Entrar com o Google</button>
+    </div>
+    <hr>
+    <div id="dados-usuario" style="display: none;">
+        <p><strong>Nome: </strong> <span id="nome-usuario"></span></p>
+        <p><strong>Email: </strong> <span id="email-usuario"></span></p>
+        <img id="foto-usuario" width="100">
+        <br>
+        <button id="btnLogout">Sair</button>
+    </div>
+
+    <script type="module" src="./js/auth.js"></script>
+</body>
+</html>
