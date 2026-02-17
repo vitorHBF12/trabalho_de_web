@@ -9,7 +9,7 @@ import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/
 import { getDatabase, ref, push, set, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 
 const FirebaseConfig = {
-    apiKey: "AIzaSyARxUcggEuk67uLdtbNXrf2yLAM6Nx-_DM", 
+    apiKey: "CHAVE DISPONIVEL NO ARQUIVO DE DESCRIÇÃO", 
     authDomain: "chat-pw-2026.Firebaseapp.com",
     databaseURL: "https://chat-pw-2026-default-rtdb.Firebaseio.com",
     projectId: "chat-pw-2026",
