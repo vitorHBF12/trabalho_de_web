@@ -6,8 +6,15 @@
     <title>Testes</title>
 </head>
 <body>
-    <div>
-        <a href="login.html">Login</a>
+    <div id="dados-usuario">
+        <img id="foto-usuario" width="100">
+        <p><strong>Nome: </strong> <span id="nome-usuario"></span></p>
+        <p><strong>Email: </strong> <span id="email-usuario"></span></p>
+        <br>
+        <button id="btnLogout">Sair</button>
     </div>
+
+    <script type="module" src="./js/auth.js"></script>
+    <script type="module" src="js/routeGuard.js"></script>
 </body>
 </html>
