@@ -89,6 +89,9 @@ body {
 
 /* MENSAGENS */
 .chat-messages {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
     flex: 1;
     padding: 20px;
     overflow-y: auto;
@@ -103,12 +106,18 @@ body {
     border-top: 1px solid #ddd;
 }
 
-.chat-input input 
+.chat-input textarea 
 {
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 16px;
+    min-height: 50px;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: height 0.1s ease;
 }
 
 .chat-input button 

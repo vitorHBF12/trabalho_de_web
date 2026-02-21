@@ -1,0 +1,54 @@
+.message p {
+    white-space: pre-line;
+}
+
+body 
+{
+    margin:0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    background-color: #e0e0e0;
+    font-family: Arial, sans-serif;
+}
+
+.container 
+{
+    text-align: center;
+    width: 90%;
+    max-width: 400px
+}
+
+.card 
+{
+    background-color: white;
+    width: 350px;
+    padding: 30px;
+    margin: auto;
+    box-shadow: 2px 2px 8px gray;
+    border-radius: 5px;
+}
+
+h2 span 
+{
+    color: #1a73e8;
+}
+
+.google-btn 
+{
+    margin-top: 20px;
+    width: 350px;
+    height: 50px;
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.google-btn:hover
+{
+    background-color: #357ae8;
+}
