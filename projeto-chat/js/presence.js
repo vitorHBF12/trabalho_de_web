@@ -1,4 +1,4 @@
-import { database } from "./config.js";
+import { auth, database } from "./config.js";
 import { 
   ref,
   set,
@@ -9,7 +9,14 @@ import {
   onChildChanged
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 import { enviarMensagemSistema } from "./ui.js";
+import { state } from "./state.js";
 
+
+let unsubscribeUsuarios = null;
+let unsubscribeStatus = null;
+let unsubscribeConexao = null;
+
+let resetTimer = null;
 
 //uso de IA
 function gerarCorParaUsuario(uid) {
@@ -38,7 +45,7 @@ export function ativarPresence(user){
     const usuarioRef = ref(database, `presence/${user.uid}`);
     const conexaoRef = ref(database, ".info/connected");
 
-    onValue(conexaoRef, (snapshot) => {
+    unsubscribeConexao = onValue(conexaoRef, (snapshot) => {
         if(snapshot.val() === true){
             onDisconnect(usuarioRef).update({
                 status: "offline",
@@ -65,8 +72,11 @@ let inactivityTimer;
 const INACTIVITY_LIMIT = 2 * 60 * 1000;
 
 function iniciarMonitoramentoDeInatividade(usuarioRef){
-    const resetTimer = () => {
+    resetTimer = () => {
         clearTimeout(inactivityTimer);
+
+        if(!auth.currentUser)
+            return;
 
         update(usuarioRef, {
             status: "online",
@@ -74,6 +84,8 @@ function iniciarMonitoramentoDeInatividade(usuarioRef){
         });
 
         inactivityTimer = setTimeout(() => {
+            if(!auth.currentUser)
+                return;
             update(usuarioRef, {
                 status: "away",
                 lastChanged: serverTimestamp()
@@ -89,7 +101,7 @@ function iniciarMonitoramentoDeInatividade(usuarioRef){
 export function escutarUsuarios(){
     const presencaRef = ref(database, "presence");
     
-    onValue(presencaRef, (snapshot) => {
+    unsubscribeUsuarios = onValue(presencaRef, (snapshot) => {
         const lista = document.getElementById("friendsList");
         if(!lista) return;
 
@@ -100,24 +112,30 @@ export function escutarUsuarios(){
         if (!usuarios) return;
 
         Object.entries(usuarios).forEach(([uid, user]) => {
+            if(state.user.uid === uid)
+                return;
+
             const li = document.createElement("li");
             li.classList.add("friend-item");
             const statusColor = 
                 user.status === "online" ? "green" : 
                 user.status === "away" ? "orange" : "gray";
 
-            const nomeOriginal = user.name ? user.name.split(" ")[0] : "Usuário";
-            let nome =
-                nomeOriginal.charAt(0).toUpperCase() +
-                nomeOriginal.slice(1).toLowerCase();
+            const nomes = user.name ? user.name.split(" ") : ["Usuário"];
+            const primeiroNome = nomes[0];
+            let nomeFormatado = primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();
 
-            nome += " " + user.name.split(" ")[1].charAt(0).toUpperCase() + user.name.split(" ")[1].slice(1).toLowerCase();
+            if (nomes[1]) {
+                const segundoNome = nomes[1];
+                nomeFormatado += " " + segundoNome.charAt(0).toUpperCase() + segundoNome.slice(1).toLowerCase();
+            }
+
             li.innerHTML = `
                 <div class="friend-avatar">
                 <img src="${user.image}" />
                 <span class="status-dot" style="background:${statusColor}"></span>
                 </div>
-                <span>${nome}</span>
+                <span>${nomeFormatado}</span>
             `;
 
             lista.appendChild(li);
@@ -125,26 +143,78 @@ export function escutarUsuarios(){
     });
 }
 
-/*export function escutarMudancasDeStatus(user){
+let statusAnterior = {};
+let offlineTimers = {};
+
+export function escutarMudancasDeStatus(user){
+
     const presenceRef = ref(database, "presence");
 
-    onChildChanged(presenceRef, (snapshot) =>{
+    unsubscribeStatus = onChildChanged(presenceRef, (snapshot) =>{
         const dados = snapshot.val();
         const uid = snapshot.key;
 
         if (uid === user.uid) 
             return;
 
-        const nomeOriginal = dados.name.split(" ")[0];
+        if (!statusAnterior[uid] && dados.status === "online")
+            return;
 
-        const nome = nomeOriginal.charAt(0).toUpperCase() + nomeOriginal.slice(1).toLowerCase();
+        const antigoStatus = statusAnterior[uid] || null;
+        const novoStatus = dados.status;
+
+        statusAnterior[uid] = novoStatus;
+
+        if(novoStatus === antigoStatus)
+            return;
+
+        if (novoStatus === "away" || antigoStatus === "away") 
+            return;
+        
+        const nomes = dados.name ? dados.name.split(" ") : ["Usuário"];
+        const primeiroNome = nomes[0];
+        let nomeFormatado = primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();
+
+        if (nomes[1]) {
+            const segundoNome = nomes[1];
+            nomeFormatado += " " + segundoNome.charAt(0).toUpperCase() + segundoNome.slice(1).toLowerCase();
+        }
 
         if(dados.status === "online") {
-            enviarMensagemSistema(`${nome} entrou no chat`);
+            if(offlineTimers[uid]){
+                clearTimeout(offlineTimers[uid]);
+                delete offlineTimers[uid];
+                return;
+            }
+
+            if (antigoStatus !== "online") {
+                enviarMensagemSistema(`${nomeFormatado} entrou no chat`);
+            }
         }
 
         if(dados.status === "offline") {
-            enviarMensagemSistema(`${nome} saiu do chat`)
+            if (antigoStatus === "online") {
+                offlineTimers[uid] = setTimeout(() => {
+                    enviarMensagemSistema(`${nomeFormatado} saiu do chat`);
+
+                    delete offlineTimers[uid];
+                }, 4000);
+            }
         }
     });
-}*/
+}
+
+export function pararPresence(){
+    if(unsubscribeUsuarios) unsubscribeUsuarios();
+    if(unsubscribeStatus) unsubscribeStatus();
+    if(unsubscribeConexao) unsubscribeConexao();
+
+    if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+    }
+
+    window.removeEventListener("mousemove", resetTimer);
+    window.removeEventListener("keydown", resetTimer);
+    window.removeEventListener("click", resetTimer);
+}

@@ -1,14 +1,16 @@
 //arquivo contém comentários para explicar aos membros alguma linhas e funções ---REMOVER DEPOIS
 
-import {auth, provider} from "./config.js";
+import {auth, provider, database} from "./config.js";
 
 //import de funções movido do config.js
 import {signInWithPopup, signOut} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 import {onAuthStateChanged} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { ref, onDisconnect, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+
 import { carregarChat } from "./messages.js";
 import { limparUsuario, mostrarUsuario } from "./ui.js";
 import { state } from "./state.js";
-import { ativarPresence, escutarUsuarios } from "./presence.js";
+import { ativarPresence, escutarMudancasDeStatus, escutarUsuarios, pararPresence } from "./presence.js";
 
 
 /*
@@ -33,6 +35,21 @@ if(loginBtn){
 if(logoutBtn){
     logoutBtn.addEventListener("click", async () =>{
         try {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const usuarioRef = ref(database, `presence/${user.uid}`);
+
+            await onDisconnect(usuarioRef).cancel();
+
+            await update(usuarioRef, {
+                status: "offline",
+                lastChanged: serverTimestamp(),
+                lastSeen: serverTimestamp()
+            });
+
+            pararPresence();
+
             await signOut(auth);
         } catch (error) {
             console.log("Erro no logout:", error);
@@ -49,6 +66,7 @@ onAuthStateChanged(auth, (user) => {
         ativarPresence(user);
         carregarChat(user);
         escutarUsuarios();
+        escutarMudancasDeStatus(user);
     }else{
         limparUsuario();
     }

@@ -17,7 +17,16 @@ export function mostrarUsuario(user){
     if(!user)
         return;
 
-    nomeUsuario.textContent = user.displayName.split(" ")[0];
+    const nomes = user.displayName.split(" ");
+    const primeiroNome = nomes[0];
+    let nomeFormatado = primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();
+
+    if (nomes[1]) {
+        const segundoNome = nomes[1];
+        nomeFormatado += " " + segundoNome.charAt(0).toUpperCase() + segundoNome.slice(1).toLowerCase();
+    }
+
+    nomeUsuario.textContent = nomeFormatado;
     imagemUsuario.src = user.photoURL;
 
     statusUsuario.textContent = "Online";
@@ -85,8 +94,20 @@ export function enviarMensagemSistema(msg){
 
     div.innerHTML = msg;
 
+    div.classList.add("page--message")
+
     container.appendChild(div);
 }
+
+/*Gera a opção do scroll*/
+const scrollScreen = () => {
+    const chatContainer = document.querySelector(".chat__messages");
+
+    chatContainer.scrollTo({
+        top: chatContainer.scrollHeight,
+        behavior: "smooth"
+    });
+};
 
 export function renderizarMensagem(id, msg){
     const container = chat.querySelector(".chat__messages");
@@ -101,14 +122,16 @@ export function renderizarMensagem(id, msg){
     if(msg.sender_id === meuUID){
         div = criarEstruturaEnvio(msg.message_text);
     }else{
-        const nomeOriginal = msg.sender_name.split(" ")[0];
-        const segundoNome = msg.sender_name.split(" ")[1];
+        const nomes = msg.sender_name.split(" ");
+        const primeiroNome = nomes[0];
+        let nomeFormatado = primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();
 
-        const nome = 
-        nomeOriginal.charAt(0).toUpperCase() + nomeOriginal.slice(1).toLowerCase() + 
-        " " + segundoNome.charAt(0).toUpperCase() + segundoNome.slice(1).toLowerCase();
+        if (nomes[1]) {
+            const segundoNome = nomes[1];
+            nomeFormatado += " " + segundoNome.charAt(0).toUpperCase() + segundoNome.slice(1).toLowerCase();
+        }
 
-        div = criarEstruturaReceber(msg.message_text, nome, msg.color);
+        div = criarEstruturaReceber(msg.message_text, nomeFormatado, msg.color);
     }
     div.id = id;
     div.classList.add("message");
@@ -125,5 +148,5 @@ export function renderizarMensagem(id, msg){
         }
     }*/
     container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
+    scrollScreen();
 }
