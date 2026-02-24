@@ -77,13 +77,22 @@ const criarEstruturaReceber = (mensagem, nome, color) => {
     return div;
 };
 
+/*Ainda não funcionando*/
+export function enviarMensagemSistema(msg){
+    const container = chat.querySelector(".chat__messages");
+
+    const div = document.createElement("div");
+
+    div.innerHTML = msg;
+
+    container.appendChild(div);
+}
+
 export function renderizarMensagem(id, msg){
-    const container = chat.querySelector(".chat__messages")
+    const container = chat.querySelector(".chat__messages");
 
     const meuUID =  state.user.uid;
-    console.log(meuUID);
 
-    console.log("Objeto final:", JSON.stringify(msg, null, 2));
     if(document.getElementById(id))
         return;
 
@@ -93,8 +102,11 @@ export function renderizarMensagem(id, msg){
         div = criarEstruturaEnvio(msg.message_text);
     }else{
         const nomeOriginal = msg.sender_name.split(" ")[0];
+        const segundoNome = msg.sender_name.split(" ")[1];
 
-        const nome = nomeOriginal.charAt(0).toUpperCase() + nomeOriginal.slice(1).toLowerCase();
+        const nome = 
+        nomeOriginal.charAt(0).toUpperCase() + nomeOriginal.slice(1).toLowerCase() + 
+        " " + segundoNome.charAt(0).toUpperCase() + segundoNome.slice(1).toLowerCase();
 
         div = criarEstruturaReceber(msg.message_text, nome, msg.color);
     }
@@ -112,8 +124,6 @@ export function renderizarMensagem(id, msg){
             info = `De: ${msg.sender_name}`;
         }
     }*/
-    console.log(msg);
-
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
 }

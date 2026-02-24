@@ -87,7 +87,6 @@ export function escutarMensagensPublicas(){
         mensagensRef, 
         limitToLast(50)
     );
-    testarConexao();
     onChildAdded(queryMensagensPublicas, snapshot =>{
         const msg = snapshot.val();
 
@@ -105,7 +104,6 @@ export function escutarMensagensPrivadas(meuUID){
         mensagensRef,         
         limitToLast(50)
     );
-    testarConexao();
     onChildAdded(queryTodasMensagens, snapshot => {
         const msg = snapshot.val();
 
@@ -116,21 +114,6 @@ export function escutarMensagensPrivadas(meuUID){
             renderizarMensagem(snapshot.key, msg);
         }
     });
-}
-
-async function testarConexao() {
-    try {
-        const snapshot = await get(mensagensRef);
-
-        if(snapshot.exists()){
-            console.log("Tem mensagens:", snapshot.val());
-        } else {
-            console.log("Banco vazio.");
-        }
-
-    } catch (error) {
-        console.error("Erro ao ler banco:", error);
-    }
 }
 
 export function carregarChat(user){

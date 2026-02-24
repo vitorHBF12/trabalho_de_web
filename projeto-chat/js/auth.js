@@ -8,6 +8,8 @@ import {onAuthStateChanged} from "https://www.gstatic.com/firebasejs/12.8.0/fire
 import { carregarChat } from "./messages.js";
 import { limparUsuario, mostrarUsuario } from "./ui.js";
 import { state } from "./state.js";
+import { ativarPresence, escutarUsuarios } from "./presence.js";
+
 
 /*
     singInWithPopup = abre uma janela popup para autenticação OAuth (Google como definimos em config.js),
@@ -44,7 +46,9 @@ onAuthStateChanged(auth, (user) => {
         state.user = user;
 
         mostrarUsuario(user);
+        ativarPresence(user);
         carregarChat(user);
+        escutarUsuarios();
     }else{
         limparUsuario();
     }
