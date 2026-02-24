@@ -1,20 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Testes</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <link rel="stylesheet" href="./css/style.css">
+
+    <title>FlowChat</title>
 </head>
 <body>
-    <div id="dados-usuario">
-        <img id="foto-usuario" width="100">
-        <p><strong>Nome: </strong> <span id="nome-usuario"></span></p>
-        <p><strong>Email: </strong> <span id="email-usuario"></span></p>
-        <br>
-        <button id="btnLogout">Sair</button>
-    </div>
+    
+    <section class="container">
+        <aside class="sidebar">
 
+            <h3>FlowChat</h3>
+
+            <!-- USUÁRIO LOGADO -->
+            <div class="sidebar__profile">
+                <img id="userPhoto" src="" alt="Foto de perfil do usuário">
+                <div>
+                    <span id="userName">Usuário</span>
+                    <span id="userStatus" class="status online">Online</span>
+                </div>
+            </div>
+
+            <!-- BOTÃO ADICIONAR -->
+            <button class="add-friend-btn">+ Adicionar amigo</button>
+
+            <!-- LISTA DE AMIGOS -->
+            <ul class="friends-list" id="friendsList">
+                <!-- Amigos vão aparecer aqui dinamicamente -->
+            </ul>
+
+            <ul class="sidebar__menu">
+                <li>Configurações</li>
+            </ul>
+
+        </aside>
+
+
+        <section class="login">
+            <img src="./img/flowchat2.png" width="80">
+            <div class="login__box">
+                <h2>Bem vindos ao FlowChat!</h2>
+                
+                <button id="btnGoogle" class="login__button">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+                    Entrar com Google
+                </button>
+
+                <p id="login-status" class="login__status"></p>
+            </div>
+        </section>
+
+        <section class="chat">
+            <section class="chat__messages">
+                <!-- <div class="message--self">Hello, World!</div>
+
+                <div class="message--other">
+                    <span class="message--sender">Manual do Dev</span>
+                    Olá, Mundo!
+                </div> -->
+            </section>
+
+            <form class="chat__form">
+                <input type="text" id="input-messages" class="chat__input" placeholder="Digite uma mensagem" required />
+                <button type="submit" id="send-button" class="chat__button">
+                    <span class="material-symbols-outlined">send</span>
+                </button>
+            </form>
+        </section>
+
+    </section>
+
+    <!--<script type="module" src="./js/script.js"></script>-->
     <script type="module" src="./js/auth.js"></script>
-    <script type="module" src="js/routeGuard.js"></script>
+    <script type="module" src="./js/messages.js"></script>
 </body>
 </html>

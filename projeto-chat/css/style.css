@@ -1,54 +1,243 @@
-.message p {
-    white-space: pre-line;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
 }
 
-body 
-{
-    margin:0;
+:root {
+    font-size: 16px;
+}
+
+body {
+    background-color: #f5f7fa;
+}
+
+/* ================== LAYOUT PRINCIPAL ================== */
+
+.container {
+    width: 100%;
     height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center; 
-    background-color: #e0e0e0;
-    font-family: Arial, sans-serif;
 }
 
-.container 
-{
-    text-align: center;
-    width: 90%;
-    max-width: 400px
+/* ================== SIDEBAR ================== */
+
+.sidebar {
+    width: 250px;
+    background-color: #1e1e1e;
+    color: white;
+    padding: 20px;
+    display: none; /* aparece depois do login */
+    flex-direction: column;
 }
 
-.card 
-{
-    background-color: white;
-    width: 350px;
-    padding: 30px;
-    margin: auto;
-    box-shadow: 2px 2px 8px gray;
-    border-radius: 5px;
+.sidebar h3 {
+    margin-bottom: 20px;
 }
 
-h2 span 
-{
-    color: #1a73e8;
+.sidebar ul {
+    list-style: none;
 }
 
-.google-btn 
-{
-    margin-top: 20px;
-    width: 350px;
-    height: 50px;
+.sidebar li {
+    padding: 12px 0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.sidebar li:hover {
+    color: #4285F4;
+}
+* PERFIL DO USUÁRIO */
+
+/* PERFIL DO USUÁRIO */
+
+.sidebar__profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #333;
+}
+
+.sidebar__profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.status {
+    font-size: 0.75rem;
+    display: block;
+}
+
+.online {
+    color: #4CAF50;
+}
+
+.offline {
+    color: #999;
+}
+
+/* BOTÃO */
+
+.add-friend-btn {
+    padding: 10px;
+    border: none;
     background-color: #4285F4;
     color: white;
-    border: none;
-    font-size: 16px;
+    border-radius: 6px;
     cursor: pointer;
-    border-radius: 5px;
+    margin-bottom: 15px;
+    transition: 0.2s;
 }
 
-.google-btn:hover
-{
+.add-friend-btn:hover {
     background-color: #357ae8;
+}
+
+/* LISTA DE AMIGOS */
+
+.friends-list {
+    list-style: none;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.friends-list li {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.friends-list li:hover {
+    background-color: #2a2a2a;
+}
+
+
+/* ================== LOGIN ================== */
+
+.login {
+    background-color: white;
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 30px;
+    margin: auto;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    border-radius: 12px;
+}
+
+.login__button {
+    margin-top: 20px;
+    border: none;
+    padding: 15px;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    background-color: #4285F4;
+    cursor: pointer;
+    color: white;
+    transition: 0.2s;
+}
+
+.login__button:hover {
+    background-color: #357ae8;
+}
+
+/* ================== CHAT ================== */
+
+.chat {
+    flex: 1;
+    display: none; /* aparece depois do login */
+    flex-direction: column;
+    height: 100vh;
+    background-color: #e9edf2;
+}
+
+/* ================== ÁREA DE MENSAGENS ================== */
+
+.chat__messages {
+    flex: 1;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* começa embaixo */
+    overflow-y: auto;
+}
+
+/* Base das mensagens */
+
+.chat__messages > div {
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 60%;
+    width: fit-content;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    font-size: 0.95rem;
+}
+
+/* ================== MINHA MENSAGEM ================== */
+
+.message--self {
+    background-color: #4285F4;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+/* ================== MENSAGEM DO OUTRO ================== */
+
+.message--other {
+    background-color: #ffffff;
+    color: #121212;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.message--sender {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 700;
+}
+
+/* ================== BARRA INFERIOR ================== */
+
+.chat__form {
+    background-color: #1e1e1e;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat__input {
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    flex: 1;
+    background-color: #2a2a2a;
+    outline: none;
+    color: white;
+    font-size: 1rem;
+}
+
+.chat__button {
+    border: none;
+    background: none;
+    color: white;
+    cursor: pointer;
+}
+
+.chat__button > span {
+    font-size: 1.8rem;
 }

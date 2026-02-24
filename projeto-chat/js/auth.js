@@ -4,13 +4,18 @@ import {auth, provider} from "./config.js";
 
 //import de funções movido do config.js
 import {signInWithPopup, signOut} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import {onAuthStateChanged} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { carregarChat } from "./messages.js";
+import { limparUsuario, mostrarUsuario } from "./ui.js";
+import { state } from "./state.js";
+
 /*
     singInWithPopup = abre uma janela popup para autenticação OAuth (Google como definimos em config.js),
 usuário loga com Google, Google retorna token, Firebase valida e por fim usuário autenticado
     singOut = apenas encerra a sessão do usuário (remove token e encerra sessão local)
 */
 
-const loginBtn = document.getElementById("btnLogin");
+const loginBtn = document.getElementById("btnGoogle");
 const logoutBtn = document.getElementById("btnLogout");
 
 if(loginBtn){
@@ -32,3 +37,15 @@ if(logoutBtn){
         }
     });
 }
+
+
+onAuthStateChanged(auth, (user) => {
+    if(user){
+        state.user = user;
+
+        mostrarUsuario(user);
+        carregarChat(user);
+    }else{
+        limparUsuario();
+    }
+});
