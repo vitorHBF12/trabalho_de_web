@@ -192,7 +192,7 @@ body {
     display: none; /* aparece depois do login */
     flex-direction: column;
     height: 100vh;
-    background-color: #e9edf2;
+    background-color: hsl(213, 26%, 93%);
 }
 
 /* ================== ÁREA DE MENSAGENS ================== */
@@ -202,7 +202,7 @@ body {
     padding: 20px 30px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* começa embaixo */
+    /*removi o justify-content: flex-end;*/
     overflow-y: auto;
 }
 

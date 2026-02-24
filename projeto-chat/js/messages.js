@@ -43,6 +43,17 @@ const gerarCorAleatoria = () => {
     return colors[randomIndex]
 }
 
+/*Gera a opção do scroll */
+const scrollScreen = () => {
+    const chatContainer = document.querySelector(".chat__messages");
+
+    chatContainer.scrollTo({
+        top: chatContainer.scrollHeight,
+        behavior: "smooth"
+    });
+};
+
+
 export async function enviarMensagem({user, message_text, receiver_id, receiver_name, color = null}) {
     if(!user){
         alert("Você precisa estar logado para enviar mensagens");
@@ -54,10 +65,16 @@ export async function enviarMensagem({user, message_text, receiver_id, receiver_
         return;
     }
 
-    if (message_text.length > 500) {
-        alert("Mensagem deve ter no máximo 500 caracteres");
+    /*CORREÇÃO AGORA ESTA VERIFICANDO PALAVRAS */
+    const quantidadePalavras = message_text
+    .trim()
+    .split(/\s+/).length;
+
+    if (quantidadePalavras > 500) {
+        alert("Mensagem deve ter no máximo 500 palavras");
         return;
     }
+
 
     const novaRef = push(mensagensRef);
 
@@ -95,6 +112,7 @@ export function escutarMensagensPublicas(){
 
         if(msg.visibility === true){
             renderizarMensagem(snapshot.key, msg);
+            scrollScreen()
         }
     });
 }
@@ -112,6 +130,7 @@ export function escutarMensagensPrivadas(meuUID){
 
         if(!msg.visibility && (msg.sender_id === meuUID || msg.receiver_id === meuUID)){
             renderizarMensagem(snapshot.key, msg);
+            scrollScreen()
         }
     });
 }
