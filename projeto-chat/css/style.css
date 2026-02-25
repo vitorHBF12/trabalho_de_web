@@ -165,8 +165,8 @@ body {
   border: 2px solid #1e1e1e;
 }
 
-/* ====== Mensagem Friend Privada =====*/
-
+/* ====== Mensagem Friend Privada  =====*/
+/*ERREI AQUI O NOME, ESSA PARTE É PARA O BOTÃO DA MENSAGEM PRIVADA*/
 .mensagemPrivada {
     position: absolute;
     left: 30px; 
@@ -216,6 +216,12 @@ body {
     border: none;
     cursor: pointer;
     font-weight: bold;
+}
+
+/*MENSAGEM PRIVADA DE FATO*/
+.private-message {
+    background-color: #ffeaa7;
+    border-left: 10px solid #e17055;
 }
 
 /* ================== LOGIN ================== */

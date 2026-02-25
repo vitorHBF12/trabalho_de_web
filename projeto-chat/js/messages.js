@@ -60,23 +60,14 @@ function cancelarMensagemPrivada() {
 
 export function ativarModoPrivado(uid, nome) {
 
-    setPrivateMessage(uid, nome)
+    const input = document.getElementById("input-messages");
 
-    const banner = document.querySelector(".private-banner");
-    const input = document.querySelector(".chat__input");
+    const prefixo = `|PM:${uid}:${nome}| `;
 
-    if (banner) {
-        banner.style.display = "flex";
-        banner.innerHTML = `
-            Enviando mensagem privada para ${nome}
-            <button id="cancelPrivate">✖</button>
-        `;
-
-        document.getElementById("cancelPrivate")
-            .addEventListener("click", cancelarMensagemPrivada);
+    if (!input.value.startsWith(prefixo)) {
+        input.value = prefixo;
     }
 
-    input.value = `|Mensagem Privada Para ${nome}| `;
     input.focus();
 }
 
@@ -86,61 +77,78 @@ export async function enviarMensagem({ user, message_text, color = null }) {
 
     const novaRef = push(mensagensRef);
 
+    let receiver_id = "";
+    let receiver_name = "";
+    let visibility = true;
+    let textoFinal = message_text;
+
+    const regexPrivado = /^\|PM:(.+?):(.+?)\|\s*/;
+
+    const match = message_text.match(regexPrivado);
+
+    if (match) {
+        receiver_id = match[1];
+        receiver_name = match[2];
+        visibility = false;
+
+        // remove o prefixo antes de salvar
+        textoFinal = message_text.replace(regexPrivado, "");
+    }
+
     const novaMensagem = {
         message_id: novaRef.key,
         timestamp: formatarTimeStamp(),
         sender_id: user.uid,
         sender_name: user.displayName,
         sender_image: user.photoURL || "",
-        receiver_id: privateMessageState.ativo 
-            ? privateMessageState.receiver_id 
-            : "",
-        receiver_name: privateMessageState.ativo 
-            ? privateMessageState.receiver_name 
-            : "",
-        visibility: privateMessageState.ativo ? false : true,
-        message_text: message_text,
+        receiver_id,
+        receiver_name,
+        visibility,
+        message_text: textoFinal,
         color: color ?? gerarCorAleatoria()
     };
 
     await set(novaRef, novaMensagem);
-
-    if (privateMessageState.ativo) {
-        cancelarMensagemPrivada();
-    }
 }
 
-export function escutarMensagensPublicas(){
+export function escutarMensagensPublicas() {
+
     const queryMensagensPublicas = query(
-        mensagensRef, 
-        limitToLast(50)
+        mensagensRef,
+        limitToLast(100)
     );
-    onChildAdded(queryMensagensPublicas, snapshot =>{
+
+    onChildAdded(queryMensagensPublicas, snapshot => {
+
         const msg = snapshot.val();
+        if (!msg) return;
 
-        if(!msg)
-            return;
-
-        if(msg.visibility === true){
+        if (msg.visibility === true) {
             renderizarMensagem(snapshot.key, msg);
         }
     });
 }
 
-export function escutarMensagensPrivadas(meuUID){
-    const queryTodasMensagens = query(
-        mensagensRef,         
-        limitToLast(50)
+export function escutarMensagensPrivadas(meuUID) {
+
+    const queryMensagens = query(
+        mensagensRef,
+        limitToLast(100) // aumenta a margem
     );
-    onChildAdded(queryTodasMensagens, snapshot => {
+
+    onChildAdded(queryMensagens, snapshot => {
+
         const msg = snapshot.val();
+        if (!msg) return;
 
-        if(!msg)
-            return;
+        const ehPrivada = msg.visibility === false;
+        const souRemetente = msg.sender_id === meuUID;
+        const souDestinatario = msg.receiver_id === meuUID;
 
-        if(!msg.visibility && (msg.sender_id === meuUID || msg.receiver_id === meuUID)){
+        if (ehPrivada && (souRemetente || souDestinatario)) {
             renderizarMensagem(snapshot.key, msg);
         }
+
     });
 }
 
@@ -156,12 +164,18 @@ export function carregarChat(user){
 
     input.addEventListener("input", () => {
 
-        if (!privateMessageState.ativo) return;
+        const regexPrivado = /^\|PM:(.+?):(.+?)\|\s*/;
+        const banner = document.querySelector(".private-banner");
 
-        const prefixo = `|Mensagem Privada Para ${privateMessageState.receiver_name}| `;
+        const match = input.value.match(regexPrivado);
 
-        if (!input.value.startsWith(prefixo)) {
-            cancelarMensagemPrivada();
+        if (match) {
+            const nome = match[2];
+
+            banner.style.display = "flex";
+            banner.innerHTML = `Mensagem privada para ${nome}`;
+        } else {
+            banner.style.display = "none";
         }
     });
 
