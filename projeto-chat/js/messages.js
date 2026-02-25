@@ -1,5 +1,6 @@
 import { database } from "./config.js";
 import { mostrarAreaDeMensagens, renderizarMensagem } from "./ui.js";
+import { privateMessageState, setPrivateMessage, clearPrivateMessage } from "./state.js";
 
 import { 
     ref,
@@ -43,22 +44,45 @@ const gerarCorAleatoria = () => {
     return colors[randomIndex]
 }
 
-/* Movido para ui.js */
+/*Cancelar mensagem privada */
+function cancelarMensagemPrivada() {
 
-export async function enviarMensagem({user, message_text, receiver_id, receiver_name, color = null}) {
-    if(!user){
-        alert("Você precisa estar logado para enviar mensagens");
-        return;
+    clearPrivateMessage();
+
+    const input = document.getElementById("input-messages");
+    const banner = document.querySelector(".private-banner");
+
+    if (input) input.value = "";
+    if (banner) banner.style.display = "none";
+}
+
+/*função completa */
+
+export function ativarModoPrivado(uid, nome) {
+
+    setPrivateMessage(uid, nome)
+
+    const banner = document.querySelector(".private-banner");
+    const input = document.querySelector(".chat__input");
+
+    if (banner) {
+        banner.style.display = "flex";
+        banner.innerHTML = `
+            Enviando mensagem privada para ${nome}
+            <button id="cancelPrivate">✖</button>
+        `;
+
+        document.getElementById("cancelPrivate")
+            .addEventListener("click", cancelarMensagemPrivada);
     }
 
-    if(!message_text || message_text.trim() === ''){
-        alert("Mensagem não pode estar vazia!");
-        return;
-    }
+    input.value = `|Mensagem Privada Para ${nome}| `;
+    input.focus();
+}
 
-    if (message_text.length > 500) {
-        alert("Mensagem deve ter no máximo 500 caracteres");
-    }
+
+
+export async function enviarMensagem({ user, message_text, color = null }) {
 
     const novaRef = push(mensagensRef);
 
@@ -68,18 +92,21 @@ export async function enviarMensagem({user, message_text, receiver_id, receiver_
         sender_id: user.uid,
         sender_name: user.displayName,
         sender_image: user.photoURL || "",
-        receiver_id: receiver_id ?? "",
-        receiver_name: receiver_name ?? "",
-        visibility: receiver_id ? false : true,
+        receiver_id: privateMessageState.ativo 
+            ? privateMessageState.receiver_id 
+            : "",
+        receiver_name: privateMessageState.ativo 
+            ? privateMessageState.receiver_name 
+            : "",
+        visibility: privateMessageState.ativo ? false : true,
         message_text: message_text,
         color: color ?? gerarCorAleatoria()
-    }
+    };
 
-    try {
-        await set(novaRef, novaMensagem);
-        console.log("Mensagem enviada com sucesso!");
-    } catch (error) {
-        console.error("Erro ao enviar mensagem:", error);
+    await set(novaRef, novaMensagem);
+
+    if (privateMessageState.ativo) {
+        cancelarMensagemPrivada();
     }
 }
 
@@ -118,6 +145,7 @@ export function escutarMensagensPrivadas(meuUID){
 }
 
 export function carregarChat(user){
+
     mostrarAreaDeMensagens();
 
     escutarMensagensPublicas();
@@ -126,9 +154,29 @@ export function carregarChat(user){
     const btn = document.getElementById("send-button");
     const input = document.getElementById("input-messages");
 
+    input.addEventListener("input", () => {
+
+        if (!privateMessageState.ativo) return;
+
+        const prefixo = `|Mensagem Privada Para ${privateMessageState.receiver_name}| `;
+
+        if (!input.value.startsWith(prefixo)) {
+            cancelarMensagemPrivada();
+        }
+    });
+
     btn.addEventListener("click", () => {
-        const texto = input.value;
-        enviarMensagem({ user, message_text: texto, color: '#007bff' });
+
+        const texto = input.value.trim();
+
+        if (!texto) return;
+
+        enviarMensagem({
+            user,
+            message_text: texto,
+            color: "#007bff"
+        });
+
         input.value = "";
     });
 }

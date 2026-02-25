@@ -40,6 +40,8 @@ if(logoutBtn){
 
             const usuarioRef = ref(database, `presence/${user.uid}`);
 
+            pararPresence();
+
             await onDisconnect(usuarioRef).cancel();
 
             await update(usuarioRef, {
@@ -48,7 +50,6 @@ if(logoutBtn){
                 lastSeen: serverTimestamp()
             });
 
-            pararPresence();
 
             await signOut(auth);
         } catch (error) {
