@@ -67,6 +67,7 @@ const criarEstruturaEnvio = (mensagem, destinatario=null) => {
     const div = document.createElement("div");
     div.classList.add("message--self");
 
+    //adiciona prefixo Para: e cadeado no bloco da mensagem
     if(destinatario){
         const nomes = destinatario.split(" ");
         const primeiroNome = nomes[0];

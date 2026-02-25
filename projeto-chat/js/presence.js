@@ -151,7 +151,6 @@ export function escutarUsuarios(){
             li.querySelector(".btnMensagemPrivada")
             .addEventListener("click", () => {
 
-                console.log("BOTÃO CLICADO"); //  teste
                 ativarModoPrivado(uid, user.name);
 
             });

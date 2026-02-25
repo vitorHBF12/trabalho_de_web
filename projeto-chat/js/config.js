@@ -3,7 +3,6 @@
 * movi onAuthStateChanged, signInWithPopup, signOut para auth.js 
 */
 
-//arquivo contém comentários para explicar aos membros alguma linhas e funções ---REMOVER DEPOIS
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 import { getDatabase } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
@@ -19,12 +18,9 @@ const FirebaseConfig = {
 };
 
 
-const app = initializeApp(FirebaseConfig); //inicializa a instância do firebase com base no nosso FirebaseConfig
-const auth = getAuth(app); //instância do serviço de autenticação do firebase (login, logout, estado do usuário, sessão)
-const database = getDatabase(app); //ainda não sei
-const provider = new GoogleAuthProvider(); //cria um provedor de login com Google (OAuth).
-/*O firebase precisa saber qual método de login iremos usar, como por exemplo 
-GoogleAuthProvider (o que vamos usar), GithubAuthProvider, FacebookAuthProvider
-será usado no auth.js*/
+const app = initializeApp(FirebaseConfig); 
+const auth = getAuth(app); 
+const database = getDatabase(app);
+const provider = new GoogleAuthProvider(); 
 
 export {auth, provider, database};

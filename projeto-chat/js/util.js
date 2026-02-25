@@ -1,8 +1,8 @@
+//Overlay para telas menores (mobile/ < 768px)
 const menuToggle = document.getElementById("menuToggle");
 const menuClose = document.getElementById("menuClose");
 const sidebar = document.querySelector(".sidebar");
 
-// opcional: overlay
 const overlay = document.createElement("div");
 overlay.classList.add("overlay");
 document.body.appendChild(overlay);

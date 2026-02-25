@@ -44,7 +44,7 @@ const gerarCorAleatoria = () => {
     return colors[randomIndex]
 }
 
-/*Cancelar mensagem privada */
+/*Cancelar mensagem privada - não utilizado*/
 function cancelarMensagemPrivada() {
 
     clearPrivateMessage();
@@ -55,8 +55,6 @@ function cancelarMensagemPrivada() {
     if (input) input.value = "";
     if (banner) banner.style.display = "none";
 }
-
-/*função completa */
 
 export function ativarModoPrivado(uid, nome) {
 
@@ -115,7 +113,7 @@ export function escutarMensagensPublicas() {
 
     const queryMensagensPublicas = query(
         mensagensRef,
-        limitToLast(100)
+        limitToLast(50)
     );
 
     onChildAdded(queryMensagensPublicas, snapshot => {
@@ -133,7 +131,7 @@ export function escutarMensagensPrivadas(meuUID) {
 
     const queryMensagens = query(
         mensagensRef,
-        limitToLast(100) // aumenta a margem
+        limitToLast(50) 
     );
 
     onChildAdded(queryMensagens, snapshot => {
