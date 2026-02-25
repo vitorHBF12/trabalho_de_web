@@ -63,15 +63,41 @@ export function mostrarAreaDeMensagens(){
     sidebar.style.display = "flex";
 }
 
-const criarEstruturaEnvio = (mensagem) => {
+const criarEstruturaEnvio = (mensagem, destinatario=null) => {
     const div = document.createElement("div");
     div.classList.add("message--self");
-    div.innerHTML = mensagem;
+
+    if(destinatario){
+        const nomes = destinatario.split(" ");
+        const primeiroNome = nomes[0];
+        let nomeFormatado = primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();
+
+        if (nomes[1]) {
+            const segundoNome = nomes[1];
+            nomeFormatado += " " + segundoNome.charAt(0).toUpperCase() + segundoNome.slice(1).toLowerCase();
+        }
+
+        const spanHeader = document.createElement("span");
+        spanHeader.classList.add("message--private-header");
+        spanHeader.textContent = `Para: ${nomeFormatado}`;
+        div.appendChild(spanHeader);
+
+        const lockSpan = document.createElement("span");
+        lockSpan.classList.add("material-symbols-outlined", "lock-icon");
+        lockSpan.textContent = "lock";
+        div.appendChild(lockSpan);
+
+        div.classList.add("private-message");
+    }
+
+    const spanMsg = document.createElement("span");
+    spanMsg.textContent = mensagem;
+    div.appendChild(spanMsg);
 
     return div;
 };
 
-const criarEstruturaReceber = (mensagem, nome, color) => {
+const criarEstruturaReceber = (mensagem, nome, color, isPrivate = felse) => {
     const div = document.createElement("div");
     const span = document.createElement("span");
     div.classList.add("message--other");
@@ -83,10 +109,18 @@ const criarEstruturaReceber = (mensagem, nome, color) => {
     div.appendChild(span);
     div.innerHTML += mensagem;
 
+    if(isPrivate){
+        const lockSpan = document.createElement("span");
+        lockSpan.classList.add("material-symbols-outlined", "lock-icon");
+        lockSpan.textContent = "lock";
+        div.appendChild(lockSpan);
+
+        div.classList.add("private-message");
+    }
+
     return div;
 };
 
-/*Ainda não funcionando*/
 export function enviarMensagemSistema(msg){
     const container = chat.querySelector(".chat__messages");
 
@@ -120,7 +154,11 @@ export function renderizarMensagem(id, msg){
 
     let div = undefined;
     if(msg.sender_id === meuUID){
-        div = criarEstruturaEnvio(msg.message_text);
+        if(!msg.visibility){ // mensagem privada
+            div = criarEstruturaEnvio(msg.message_text, msg.receiver_name);
+        } else {
+            div = criarEstruturaEnvio(msg.message_text);
+        }
     }else{
         const nomes = msg.sender_name.split(" ");
         const primeiroNome = nomes[0];
@@ -131,7 +169,11 @@ export function renderizarMensagem(id, msg){
             nomeFormatado += " " + segundoNome.charAt(0).toUpperCase() + segundoNome.slice(1).toLowerCase();
         }
 
-        div = criarEstruturaReceber(msg.message_text, nomeFormatado, msg.color);
+        if(!msg.visibility){
+            nomeFormatado = `De: ${nomeFormatado}`;
+        }
+
+        div = criarEstruturaReceber(msg.message_text, nomeFormatado, msg.color, !msg.visibility);
     }
     div.id = id;
     div.classList.add("message");
@@ -139,14 +181,7 @@ export function renderizarMensagem(id, msg){
     if (!msg.visibility) {
         div.classList.add("private-message");
     }
-
-    /*if(!msg.visibility){
-        if(msg.sender_id === meuUID){
-            info = `Para: ${msg.receiver_name}`;
-        } else {
-            info = `De: ${msg.sender_name}`;
-        }
-    }*/
+    
     container.appendChild(div);
     scrollScreen();
 }

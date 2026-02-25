@@ -11,8 +11,11 @@
 </head>
 <body>
     
-    <section class="container">
+    <main class="container">
         <aside class="sidebar">
+            <button class="menu-close" id="menuClose" aria-label="Fechar menu">
+                ✖
+            </button>
 
             <h3>FlowChat</h3>
 
@@ -21,7 +24,11 @@
                 <img id="userPhoto" src="" alt="Foto de perfil do usuário">
                 <div>
                     <span id="userName">Usuário</span>
-                    <span id="userStatus" class="status online"></span>
+                    <span 
+                        id="userStatus" 
+                        class="status online"
+                        aria-label="Usuário online">
+                    </span>
                 </div>
             </div>
 
@@ -31,7 +38,12 @@
             </ul>
 
             <ul class="sidebar__menu">
-                <li id="btnLogout">Logout</li>
+                <button id="btnLogout" class="sidebar__logout">
+                    <span class="material-symbols-outlined" aria-hidden="true">
+                        logout
+                    </span>
+                    Sair
+                </button>
             </ul>
 
         </aside>
@@ -47,24 +59,37 @@
                     Entrar com Google
                 </button>
 
-                <p id="login-status" class="login__status"></p>
+                <p 
+                    id="login-status"
+                    class="login__status"
+                    role="status"
+                    aria-live="polite">
+                </p>
             </div>
         </section>
 
-        <section class="chat">
-            <section class="chat__messages">
-                <!-- <div class="message--self">Hello, World!</div>
+        <div class="overlay" id="overlay"></div>
 
-                <div class="message--other">
-                    <span class="message--sender">Manual do Dev</span>
-                    Olá, Mundo!
-                </div> -->
+        <section class="chat">
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+                ☰
+            </button>
+
+            <section class="chat__messages" aria-live="polite" aria-label="Mensagens do chat">
             </section>
 
             <form class="chat__form">
+                <label for="input-messages" class="visually-hidden">Campo de mensagem</label>
                 <input type="text" id="input-messages" class="chat__input" placeholder="Digite uma mensagem" required />
-                <button type="submit" id="send-button" class="chat__button">
-                    <span class="material-symbols-outlined">send</span>
+                <button 
+                    type="submit"
+                    id="send-button"
+                    class="chat__button"
+                    aria-label="Enviar mensagem">
+                    
+                    <span class="material-symbols-outlined" aria-hidden="true">
+                        send
+                    </span>
                 </button>
             </form>
         </section>
@@ -73,6 +98,6 @@
 
     <script type="module" src="./js/auth.js"></script>
     <script type="module" src="./js/messages.js"></script>
-    <!--<script type="module" src="./js/presence.js"></script>-->
+    <script type="module" src="./js/util.js"></script>
 </body>
 </html>

@@ -167,6 +167,8 @@ export function carregarChat(user){
         const regexPrivado = /^\|PM:(.+?):(.+?)\|\s*/;
         const banner = document.querySelector(".private-banner");
 
+        if (!banner) return;
+
         const match = input.value.match(regexPrivado);
 
         if (match) {
