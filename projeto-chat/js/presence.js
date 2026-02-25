@@ -152,7 +152,7 @@ export function escutarUsuarios(){
             .addEventListener("click", () => {
 
                 console.log("BOTÃO CLICADO"); //  teste
-                ativarModoPrivado(user.uid, user.name);
+                ativarModoPrivado(uid, user.name);
 
             });
             lista.appendChild(li);
