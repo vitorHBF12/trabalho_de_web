@@ -1,5 +1,6 @@
 import { database } from "./config.js";
 import { mostrarAreaDeMensagens, renderizarMensagem } from "./ui.js";
+import { privateMessageState, setPrivateMessage, clearPrivateMessage } from "./state.js";
 
 import { 
     ref,
@@ -43,24 +44,56 @@ const gerarCorAleatoria = () => {
     return colors[randomIndex]
 }
 
-/* Movido para ui.js */
+/*Cancelar mensagem privada */
+function cancelarMensagemPrivada() {
 
-export async function enviarMensagem({user, message_text, receiver_id, receiver_name, color = null}) {
-    if(!user){
-        alert("Você precisa estar logado para enviar mensagens");
-        return;
+    clearPrivateMessage();
+
+    const input = document.getElementById("input-messages");
+    const banner = document.querySelector(".private-banner");
+
+    if (input) input.value = "";
+    if (banner) banner.style.display = "none";
+}
+
+/*função completa */
+
+export function ativarModoPrivado(uid, nome) {
+
+    const input = document.getElementById("input-messages");
+
+    const prefixo = `|PM:${uid}:${nome}| `;
+
+    if (!input.value.startsWith(prefixo)) {
+        input.value = prefixo;
     }
 
-    if(!message_text || message_text.trim() === ''){
-        alert("Mensagem não pode estar vazia!");
-        return;
-    }
+    input.focus();
+}
 
-    if (message_text.length > 500) {
-        alert("Mensagem deve ter no máximo 500 caracteres");
-    }
+
+
+export async function enviarMensagem({ user, message_text, color = null }) {
 
     const novaRef = push(mensagensRef);
+
+    let receiver_id = "";
+    let receiver_name = "";
+    let visibility = true;
+    let textoFinal = message_text;
+
+    const regexPrivado = /^\|PM:(.+?):(.+?)\|\s*/;
+
+    const match = message_text.match(regexPrivado);
+
+    if (match) {
+        receiver_id = match[1];
+        receiver_name = match[2];
+        visibility = false;
+
+        // remove o prefixo antes de salvar
+        textoFinal = message_text.replace(regexPrivado, "");
+    }
 
     const novaMensagem = {
         message_id: novaRef.key,
@@ -68,56 +101,59 @@ export async function enviarMensagem({user, message_text, receiver_id, receiver_
         sender_id: user.uid,
         sender_name: user.displayName,
         sender_image: user.photoURL || "",
-        receiver_id: receiver_id ?? "",
-        receiver_name: receiver_name ?? "",
-        visibility: receiver_id ? false : true,
-        message_text: message_text,
+        receiver_id,
+        receiver_name,
+        visibility,
+        message_text: textoFinal,
         color: color ?? gerarCorAleatoria()
-    }
+    };
 
-    try {
-        await set(novaRef, novaMensagem);
-        console.log("Mensagem enviada com sucesso!");
-    } catch (error) {
-        console.error("Erro ao enviar mensagem:", error);
-    }
+    await set(novaRef, novaMensagem);
 }
 
-export function escutarMensagensPublicas(){
+export function escutarMensagensPublicas() {
+
     const queryMensagensPublicas = query(
-        mensagensRef, 
-        limitToLast(50)
+        mensagensRef,
+        limitToLast(100)
     );
-    onChildAdded(queryMensagensPublicas, snapshot =>{
+
+    onChildAdded(queryMensagensPublicas, snapshot => {
+
         const msg = snapshot.val();
+        if (!msg) return;
 
-        if(!msg)
-            return;
-
-        if(msg.visibility === true){
+        if (msg.visibility === true) {
             renderizarMensagem(snapshot.key, msg);
         }
     });
 }
 
-export function escutarMensagensPrivadas(meuUID){
-    const queryTodasMensagens = query(
-        mensagensRef,         
-        limitToLast(50)
+export function escutarMensagensPrivadas(meuUID) {
+
+    const queryMensagens = query(
+        mensagensRef,
+        limitToLast(100) // aumenta a margem
     );
-    onChildAdded(queryTodasMensagens, snapshot => {
+
+    onChildAdded(queryMensagens, snapshot => {
+
         const msg = snapshot.val();
+        if (!msg) return;
 
-        if(!msg)
-            return;
+        const ehPrivada = msg.visibility === false;
+        const souRemetente = msg.sender_id === meuUID;
+        const souDestinatario = msg.receiver_id === meuUID;
 
-        if(!msg.visibility && (msg.sender_id === meuUID || msg.receiver_id === meuUID)){
+        if (ehPrivada && (souRemetente || souDestinatario)) {
             renderizarMensagem(snapshot.key, msg);
         }
+
     });
 }
 
 export function carregarChat(user){
+
     mostrarAreaDeMensagens();
 
     escutarMensagensPublicas();
@@ -126,9 +162,37 @@ export function carregarChat(user){
     const btn = document.getElementById("send-button");
     const input = document.getElementById("input-messages");
 
+    input.addEventListener("input", () => {
+
+        const regexPrivado = /^\|PM:(.+?):(.+?)\|\s*/;
+        const banner = document.querySelector(".private-banner");
+
+        if (!banner) return;
+
+        const match = input.value.match(regexPrivado);
+
+        if (match) {
+            const nome = match[2];
+
+            banner.style.display = "flex";
+            banner.innerHTML = `Mensagem privada para ${nome}`;
+        } else {
+            banner.style.display = "none";
+        }
+    });
+
     btn.addEventListener("click", () => {
-        const texto = input.value;
-        enviarMensagem({ user, message_text: texto, color: '#007bff' });
+
+        const texto = input.value.trim();
+
+        if (!texto) return;
+
+        enviarMensagem({
+            user,
+            message_text: texto,
+            color: "#007bff"
+        });
+
         input.value = "";
     });
 }

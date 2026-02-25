@@ -7,6 +7,14 @@
     font-family: "Inter", sans-serif;
 }
 
+button:focus-visible,
+.chat__input:focus-visible,
+.friends-list li:focus-visible {
+    outline: 3px solid #4285F4;
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
 :root {
     font-size: 16px;
 }
@@ -48,10 +56,13 @@ body {
     transition: 0.2s;
 }
 
+.sidebar li:focus-visible {
+    outline: 3px solid #4285F4;
+}
+
 .sidebar li:hover {
     color: #4285F4;
 }
-* PERFIL DO USUÁRIO */
 
 /* PERFIL DO USUÁRIO */
 
@@ -83,23 +94,6 @@ body {
     color: #999;
 }
 
-/* BOTÃO */
-
-.add-friend-btn {
-    padding: 10px;
-    border: none;
-    background-color: #4285F4;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 15px;
-    transition: 0.2s;
-}
-
-.add-friend-btn:hover {
-    background-color: #357ae8;
-}
-
 /* LISTA DE AMIGOS */
 
 .friends-list {
@@ -117,16 +111,31 @@ body {
     transition: 0.2s;
 }
 
-.friends-list li:hover {
-    background-color: #2a2a2a;
+.chat__messages,
+.friends-list {
+    scroll-behavior: smooth;
 }
 
+/*Alterei para incluir o botão de mensagem privada*/
 .friend-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 6px;
+    transition: 0.2s;
+    cursor: pointer;
+    position: relative;
+    height: 50px;
+    margin: 10px;
+}
+
+.friend-item:hover .friend-name {
+    opacity: 0;
+    transform: translateX(-10px);
+}
+
+.friend-name {
+  transition: opacity 0.2s ease;
 }
 
 .friend-avatar {
@@ -139,6 +148,12 @@ body {
   border-radius: 50%;
 }
 
+.friend-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .status-dot {
   width: 10px;
   height: 10px;
@@ -147,6 +162,104 @@ body {
   bottom: 0;
   right: 0;
   border: 2px solid #1e1e1e;
+}
+
+/* ====== Mensagem Friend Privada  =====*/
+/*ERREI AQUI O NOME, ESSA PARTE É PARA O BOTÃO DA MENSAGEM PRIVADA*/
+.mensagemPrivada {
+    position: absolute;
+    left: 8px; 
+    right: 30px;
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.friend-item:hover .mensagemPrivada {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.friend-item:focus-within .mensagemPrivada {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.btnMensagemPrivada {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    background-color: #4285F4;
+    color: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btnMensagemPrivada:hover {
+    background-color: #357ae8;
+}
+
+
+.private-banner {
+    background-color: #ffeaa7;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #e17055;
+}
+
+.private-banner button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.private-banner button:focus-visible {
+    outline: 2px solid #e17055;
+}
+
+/*MENSAGEM PRIVADA DE FATO*/
+.private-message {
+    background-color: #ffeaa7;
+    border-left: 10px solid #e17055;
+    position: relative;
+    padding-left: 45px;
+    word-break: break-word;
+}
+
+.private-message .lock-icon {
+    position: absolute;
+    left:1px;
+    top: 10px;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: #e17055;
+    pointer-events: none;
+}
+
+.message--self.private-message .lock-icon {
+    position: absolute;
+    left: 1px;
+    top: 10px; /* alinhado com o cabeçalho */
+    font-size: 1.1rem;
+    color: #e17055;
+    pointer-events: none;
+}
+
+.message--self.private-message .message--private-header {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+    color: #333;
 }
 
 /* ================== LOGIN ================== */
@@ -179,6 +292,36 @@ body {
 
 .login__button:hover {
     background-color: #357ae8;
+}
+
+.sidebar__logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #f5f5f5;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar__logout:hover {
+    background-color: rgba(255, 82, 82, 0.1);
+    color: #ff5252;
+}
+
+.sidebar__logout:focus-visible {
+    outline: 2px solid #ff5252;
+    outline-offset: 2px;
+}
+
+.sidebar__logout .material-symbols-outlined {
+    font-size: 1.2rem;
 }
 
 /* ================== CHAT ================== */
@@ -274,4 +417,94 @@ body {
 
 .chat__button > span {
     font-size: 1.8rem;
+}
+
+.visually-hidden {
+    position: absolute;
+    left: -9999px;
+}
+
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 1.8rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1100;
+}
+
+/* BOTÃO FECHAR */
+.menu-close {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: white;
+    align-self: flex-end;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.overlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px; /* escondida */
+        width: 250px;
+        height: 100%;
+        background-color: #1e1e1e;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        z-index: 1000;
+        transition: left 0.3s ease;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    /* mostrar botões apenas no mobile */
+    .menu-toggle,
+    .menu-close {
+        display: block;
+    }
+
+    .chat {
+        flex: 1;
+        width: 100%;
+    }
+
+    .menu-toggle,
+    .menu-close {
+        display: block;
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 900;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+
+    .sidebar__logout {
+        margin-top: auto;
+    }
 }

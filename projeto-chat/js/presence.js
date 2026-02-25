@@ -10,11 +10,13 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 import { enviarMensagemSistema } from "./ui.js";
 import { state } from "./state.js";
+import { ativarModoPrivado } from "./messages.js";
 
 
 let unsubscribeUsuarios = null;
 let unsubscribeStatus = null;
 let unsubscribeConexao = null;
+
 
 let resetTimer = null;
 
@@ -131,13 +133,28 @@ export function escutarUsuarios(){
             }
 
             li.innerHTML = `
-                <div class="friend-avatar">
-                <img src="${user.image}" />
-                <span class="status-dot" style="background:${statusColor}"></span>
+                <div class="friend-header">
+                    <div class="friend-avatar">
+                        <img src="${user.image}" />
+                        <span class="status-dot" style="background:${statusColor}"></span>
+                    </div>
+                    <span class="friend-name">${nomeFormatado}</span>
                 </div>
-                <span>${nomeFormatado}</span>
+
+                <div class="mensagemPrivada">
+                    <button class="btnMensagemPrivada">
+                        Enviar Mensagem Privada
+                    </button>
+                </div>
             `;
 
+            li.querySelector(".btnMensagemPrivada")
+            .addEventListener("click", () => {
+
+                console.log("BOTÃO CLICADO"); //  teste
+                ativarModoPrivado(uid, user.name);
+
+            });
             lista.appendChild(li);
         });
     });
